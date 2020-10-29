@@ -37,7 +37,7 @@ x_verified = z(1)*x1 + z(2)*x2;
 
 %output 4: find A_hat matrix in terms of A,P,Q 
 %define the matrix A and the basis P and Q 
-A = [1 2 0 1; 0 1 -1 -2; 1 0 3 4; 0 -1 2 3; 0 0 2 2];
+A = [1 0 1 0 0; 2 1 0 -1 0; 0 -1 3 2 2; -1 -2 4 3 2]';
 P = [1 1 1 1; 0 1 0 0; 0 0 1 0; 0 0 0 1];
 Q = [1 1 0 0 1; 1 -1 0 0 0; 0 0 1 1 0; 0 0 1 -1 0; 0 0 0 0 1];
 
@@ -50,7 +50,7 @@ A_hat = Q_inv*(A_prime)
 %get the rank of A matrix 
 rank_A = rank(A); 
 
-%get the number of columns and rows in A where n is the # of rows and m is
+%get the number of columns and rows in A where m is the # of rows and n is
 %the number of columns 
 [m, n] = size(A); 
 

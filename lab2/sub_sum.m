@@ -3,6 +3,5 @@ function C = sub_sum(A,B)
 %and returns the matrix C 
 
 C = [A B];
-C = orth(C) 
-
+C = orth(C);
 end 

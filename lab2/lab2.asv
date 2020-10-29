@@ -23,12 +23,13 @@ x1 = [1;1];
 x2 = [2;1];
 
 %the change of coordinates is represented by z = P^-1x 
-%define P and x 
-x = [2;1];
+%define P
 P = [x1, x2];
-
 p_inv = inv(P);
-z = p_inv * x 
+x = [2;1];
 
-%numerically verify that x can be written as an l.c of x1 and x2 and z
-x_verified = z(1)*x1 + z(2)*x2; 
+z = p_inv * x
+
+%numerically verify that x can be written as a lin combo of x1 and x2 and z
+
+x_verified = z(1)*x1 + z(2)*x2 

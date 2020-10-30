@@ -217,19 +217,22 @@ c_lead1 = tf(num, den1)
 c_lead = c_lead1 *(-30);
 
 %returns 1+c*g as a factored transfer function 
-z = zpk(1+c_lead*G);
+z = zpk(1+c_lead*G)
+
+x = [1,1000,1065,75400]
+roots(x) % output the roots of 1 + c*G
 
 %since the zeroes of the numerator of z are contained in the open left half
 %plane, we know that our controller results in an output that is BIBO
 %stable
 
 %set initial conditions 
-x_0 = [pi/2; 0;0]  
+x_0 = [pi; 0;0]  
 %set relative tolerances for integration
 options = odeset('RelTol', 1e-7,'AbsTol', 1e-7);
 
 %set Tspan
-Tspan = linspace(0,200,1e3);
+Tspan = linspace(0,100,1e3);
 
 %integrate for both initial conditions
 [t,x]=ode45(@controlled_pendulum,Tspan,x_0,options,parameters);
@@ -246,6 +249,6 @@ ylabel('x2');
 
 figure('Name', 'time plots');
 plot(t, z_plt, 'r');
-title('zed');
+title('z vs t');
 xlabel('t');
 ylabel('z(t)');

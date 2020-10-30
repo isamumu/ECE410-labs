@@ -87,16 +87,11 @@ Av2 = A_o*v2;
 % the previously obtained product
 netSum1 = Av1 - 2 * v1
 netSum2 = Av2 - (-1) * v2
-
-% check for A-invariance
-if (netSum1 == 0) && (netSum2 == 0)
-    disp('A is A-invariant!')
-else
-    disp('A is not A-invariant!')
-end
+% sine the net sum is 0, it means we found a Linear combo hence
+% A-invariance!
 
 % note A is 3x3, so V is a 3 dimentional set. So we must complete the set
-v3 = [0 0 1]'
+v3 = null(v') % according to section 4, W must be Ker(v')
 P = [v1 v2 v3]
 PAP = inv(P) * A_o * P
 
@@ -104,6 +99,22 @@ PAP = inv(P) * A_o * P
 % the upper corner of the 3x3 matrix. Hence it is in block upper triangular
 % form
 
+%---Part 5: Controllability and Kalman Decomposition---- 
+A = [5 -11 5; 0 -6 0; -5 5 -1];
+B = [1 -2; 0 0; 1 2]
 
+ctrlMtx = ctrb(A,B)
+basis = orth(ctrlMtx)
+W = null(basis')
+P = [basis W]
+
+Ahat = inv(P)*A*P
+Bhat = inv(P)*B
+%indeed, it has the form predicted in section 5.7
+syms z1 z2 u
+% controllable subsystem: A11*z1 + B1u
+ctrlsys = Ahat(1:2,1:2)*z1 + Bhat(1:2,1:2)*u
+% uncontrollable subsystem: A12*z2
+unctrlsys = Ahat(1:2,3:3)*z2
 
 

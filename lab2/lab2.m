@@ -48,15 +48,15 @@ A_hat = Q_inv*(A_prime)
 
 %output 5: rank, nullity, injectivity/surjectivity 
 %get the rank of A matrix 
-rank_A = rank(A); 
+rank_A = rank(A)
 
 %get the number of columns and rows in A where m is the # of rows and n is
 %the number of columns 
-[m, n] = size(A); 
+[m, n] = size(A);
 
 %By the rank nullity theorem: rank(A) + nullity(A) = n 
-%and using the fact that nullity(A) = dim(Ker(A)) 
-nullity_A = n - rank(A);   
+%and using the fact that nullity(A) = dim(KerA)) 
+nullity_A = n - rank(A)
 
 %determine classification of A-matrix 
 if (rank_A == m) && (m == n)
@@ -70,6 +70,10 @@ else
 end 
 
 %output 6
+b1 = [1 0 0 0 0];
+b2 = [1 1 -2 -2 -2]
+x1 = A\b1'
+x2 = A\b2'
 
 %---Part 4: A-Invariance and Representation Thm---- 
 
@@ -80,8 +84,8 @@ v2 = [1 -2 1]';
 v = [v1 v2];
 
 % apply multiplication with the vectors to the A matrices
-Av1 = A_o*v1;
-Av2 = A_o*v2;
+Av1 = A_o*v1
+Av2 = A_o*v2
 
 % analytically we found a linear combo, so we check by subtracting it from
 % the previously obtained product
@@ -93,7 +97,7 @@ netSum2 = Av2 - (-1) * v2
 % note A is 3x3, so V is a 3 dimentional set. So we must complete the set
 v3 = null(v') % according to section 4, W must be Ker(v')
 P = [v1 v2 v3]
-PAP = inv(P) * A_o * P
+Ahat = inv(P) * A_o * P
 
 % based on the above output we notice that the numbers are all confined to
 % the upper corner of the 3x3 matrix. Hence it is in block upper triangular
@@ -112,9 +116,14 @@ Ahat = inv(P)*A*P
 Bhat = inv(P)*B
 %indeed, it has the form predicted in section 5.7
 syms z1 z2 u
+A11 = Ahat(1:2,1:2)
+B1 = Bhat(1:2,1:2)
+B2 = Bhat(3,:);
+A12 = Ahat(1:2,3:3)
+A22 = Ahat(3:3,3:3);
 % controllable subsystem: A11*z1 + B1u
-ctrlsys = Ahat(1:2,1:2)*z1 + Bhat(1:2,1:2)*u
+ctrlsys = A11*z1 + B1*u
 % uncontrollable subsystem: A12*z2
-unctrlsys = Ahat(1:2,3:3)*z2
+unctrlsys = A12*z2
 
 

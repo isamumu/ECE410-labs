@@ -79,16 +79,14 @@ x2 = A\b2;
 y = null(A);
 
 %check if there exists a solution first by using the theorem for existence
-%of solutions (for ax = b, a soln exists iff rank(a b) = rank(a)) 
-temp1 = [A b1];
-temp2 = [A b2]; 
+%of solutions (for ax = b, a soln exists iff rank(a b) = rank(a) 
+temp1 = [A b1] 
+temp2 = [A b2] 
 
-rank_1 = rank(temp1) 
-rank_2 = rank(temp2) 
-
-%Check if there are infinite solutions or a particular solution 
-% we can check for infinite solutions by adding x to y and verifying that A*(x+y) 
-%gives back the same b 
+%Check if there are infinite solutions or no solutions 
+%if A*x returns b then we know that there is a solution. we can check for
+%infinite solutions by adding x to y and verifying that A*(x+y) gives back
+%the same b 
 
 check_x2 = A*(x2+y)
 

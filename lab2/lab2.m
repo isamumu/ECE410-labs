@@ -26,7 +26,7 @@ x2 = [2;1];
 %the change of coordinates is represented by z = P^-1x 
 %define P and x 
 x = [2;1];
-P = [x1, x2];
+P = [x1 x2];
 
 p_inv = inv(P);
 z = p_inv * x
@@ -58,7 +58,7 @@ rank_A = rank(A)
 %and using the fact that nullity(A) = dim(KerA)) 
 nullity_A = n - rank(A)
 
-%determine classification of A-matrix 
+%determine the type of transformation of A 
 if (rank_A == m) && (m == n)
     disp('Transformation is an isomorphism')
 elseif (rank_A == m)
@@ -96,14 +96,13 @@ check_x2 = A*(x2+y)
 %solution and b2 has infinite solutions. another soln to b2 is: 
 
 c = x2 + y
-
 %---Part 4: A-Invariance and Representation Thm---- 
 
 % obtain the matrices
 A_o = [1 2 2; 1 -3 -5; -1 2 4];
 v1 = [0 1 -1]';
 v2 = [1 -2 1]';
-v = [v1 v2];
+v = [v1 v2];Z
 
 % apply multiplication with the vectors to the A matrices
 Av1 = A_o*v1
@@ -113,7 +112,7 @@ Av2 = A_o*v2
 % the previously obtained product
 netSum1 = Av1 - 2 * v1
 netSum2 = Av2 - (-1) * v2
-% sine the net sum is 0, it means we found a Linear combo hence
+% since the net sum is 0, it means we found a Linear combo hence
 % A-invariance!
 
 % note A is 3x3, so V is a 3 dimentional set. So we must complete the set

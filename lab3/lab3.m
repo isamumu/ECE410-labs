@@ -49,3 +49,40 @@ Tspan = linspace(0,10,1e3);
 %integrate for both initial conditions
 [t,x]=ode45(@cartPendulum,Tspan,ic ,options,parameters);
 
+X1_plt = x(:,1); %x1(t): first column of x
+X2_plt = x(:,2); %x2(t): third column of x
+X3_plt = x(:,3); %x1(t): first column of z
+X4_plt = x(:,4); %x2(t): third column of z
+
+figure('Name', 'sec. 5: IC = sqrt(g/l)');
+subplot(3,2,1);
+plot(t, X1_plt);
+title('x1 vs time');
+xlabel('t');
+ylabel('x1');
+
+subplot(3,2,2);
+plot(t, X2_plt);
+title('x2 vs time');
+xlabel('t');
+ylabel('x2');
+
+subplot(3,2,3);
+plot(t, X3_plt);
+title('x3 vs time');
+xlabel('t');
+ylabel('x3');
+
+subplot(3,2,4);
+plot(t, X4_plt);
+title('x4 vs time');
+xlabel('t');
+ylabel('x4');
+
+subplot(3,2,5);
+plot(t, x);
+title('x vs time');
+xlabel('t');
+ylabel('x');
+
+

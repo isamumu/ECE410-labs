@@ -35,7 +35,8 @@ rankQc = rank(Qc) % notice this equals 4
 % ===== obtain those gains =====
 % define desired poles
 p = [-1 -2 -3 -4];
-K1 = place(A,B,p)
+p2 = [-1 -2 -3 -20];
+K1 = place(A,B,p2);
 
 % define initial conditions
 ic = [-0.5, 0, -pi/4, 0];
@@ -47,14 +48,15 @@ options = odeset('RelTol', 1e-7,'AbsTol', 1e-7);
 Tspan = linspace(0,10,1e3);
 
 %integrate for both initial conditions
-[t,x]=ode45(@cartPendulum,Tspan,ic ,options,parameters);
+[t,x]=ode45(@cartPendulum,Tspan,ic,options,parameters, K1);
 
 X1_plt = x(:,1); %x1(t): first column of x
 X2_plt = x(:,2); %x2(t): third column of x
 X3_plt = x(:,3); %x1(t): first column of z
 X4_plt = x(:,4); %x2(t): third column of z
 
-figure('Name', 'sec. 5: IC = sqrt(g/l)');
+
+figure('Name', 'K1');
 subplot(3,2,1);
 plot(t, X1_plt);
 title('x1 vs time');
@@ -84,5 +86,4 @@ plot(t, x);
 title('x vs time');
 xlabel('t');
 ylabel('x');
-
 

@@ -1,4 +1,4 @@
-function xdot = cartPendulum(t,ic,parameters, K) %t-time;x-state;parameters-M,g,l
+function xdot = cartPendulum(t,ic,parameters,K,A,B) %t-time;x-state;parameters-M,g,l
   
     %extract pendulum states
     x1 = ic(1);
@@ -19,10 +19,7 @@ function xdot = cartPendulum(t,ic,parameters, K) %t-time;x-state;parameters-M,g,
     
     %compute xdot
     xdot = [];
-    xdot(1) = x2;
-    xdot(2) = ((-m.*l.*sin(x3).*x4.*x4)+(m*g*sin(x3)*cos(x3)+u))./(M+m.*sin(x3).*sin(x3));
-    xdot(3) = x4;
-    xdot(4) = ((-m*l.*sin(x3).*cos(x3).*x4.*x4)+(M+m).*g.*sin(x3)+u.*cos(x3))./(l.*(M+m.*sin(x3).*sin(x3)));
+    xdot = A*x' + B*u
     
     xdot = xdot(:)
 end

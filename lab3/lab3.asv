@@ -70,12 +70,15 @@ title('x1 vs time');
 xlabel('t');
 ylabel('x1');
 hold on;
+legend('state 1 of set 1')
+hold on;
 
 subplot(3,2,2);
 plot(t, X2_plt);
 title('x2 vs time');
 xlabel('t');
 ylabel('x2');
+legend('state 2 of set 1')
 hold on;
 
 subplot(3,2,3);
@@ -83,6 +86,7 @@ plot(t, X3_plt);
 title('x3 vs time');
 xlabel('t');
 ylabel('x3');
+legend('state 3 of set 1')
 hold on;
 
 subplot(3,2,4);
@@ -90,6 +94,7 @@ plot(t, X4_plt);
 title('x4 vs time');
 xlabel('t');
 ylabel('x4');
+legend('state 4 of set 1')
 hold on;
 
 subplot(3,2,5);
@@ -103,32 +108,32 @@ legend('state 1 of set 1', 'state 2 of set 1', 'state 3 of set 1', 'state 4 of s
 hold on;
 % ====================================== %
 subplot(3,2,1);
-plot(t, X1o_plt);
+%plot(t, X1o_plt);
 title('x1 vs time');
 xlabel('t');
 ylabel('x1');
-legend('state 1 of set 1', 'state 1 of set 2')
+legend('state 1 of set 1', 'belh')
 
 subplot(3,2,2);
 plot(t, X2o_plt);
 title('x2 vs time');
 xlabel('t');
 ylabel('x2');
-legend('state 2 of set 1', 'state 2 of set 2')
+legend('state 2 of set 2')
 
 subplot(3,2,3);
 plot(t, X3o_plt);
 title('x3 vs time');
 xlabel('t');
 ylabel('x3');
-legend('state 3 of set 1', 'state 3 of set 2')
+legend('state 3 of set 2')
 
 subplot(3,2,4);
 plot(t, X4o_plt);
 title('x4 vs time');
 xlabel('t');
 ylabel('x4');
-legend('state 4 of set 1', 'state 4 of set 2')
+legend('state 4 of set 2')
 
 subplot(3,2,5);
 plot(t, x2);
@@ -136,5 +141,5 @@ title('x vs time');
 xlabel('t');
 ylabel('x');
 
-legend('state 1 of set 1', 'state 2 of set 1', 'state 3 of set 1', 'state 4 of set 1', 'state 1 of set 2', 'state 2 of set 2', 'state 3 set 2', 'state 4 of set 2')
+legend('-1 of set 2', '-2 of set 2', '-3 of set 2', '-20 of set 2')
 

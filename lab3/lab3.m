@@ -18,10 +18,16 @@ x = [x1 x2 x3 x4];
 A = jacobian(xdot,x)
 B = jacobian(xdot,u)
 
-Asub = subs(A,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
-Bsub = subs(B,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
-Alinear = subs(Asub, {x1,x2,x3,x4}, {0,0,0,0});
-Blinear = subs(Bsub, {x1,x2,x3,x4}, {0,0,0,0});
+xbar = [0 0 0 0];
+
+A = subs(A, x, xbar) %should sub in u, but expression goes to 0 already
+B = subs(B, x, xbar)
+
+Alinear = subs(A,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
+Blinear = subs(B,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
+
+%Alinear = subs(Asub, {x1,x2,x3,x4}, {0,0,0,0});
+%Blinear = subs(Bsub, {x1,x2,x3,x4}, {0,0,0,0});
 
 A = double(Alinear);
 B = double(Blinear);
@@ -52,6 +58,9 @@ Tspan = linspace(0,10,1e3);
 [t,x]=ode45(@cartPendulum,Tspan,ic,options,parameters,K1,A,B);
 [t,x2]=ode45(@cartPendulum,Tspan,ic,options,parameters,K2,A,B);
 
+u1 = -K1*x';
+u2 = -K2*x2';
+
 X1_plt = x(:,1); %x1(t): first column of x
 X2_plt = x(:,2); %x2(t): third column of x
 X3_plt = x(:,3); %x1(t): first column of z
@@ -66,81 +75,80 @@ X4o_plt = x2(:,4); %x2(t): third column of z
 figure('Name', 'section 4 plots');
 subplot(3,2,1);
 plot(t, X1_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
+ylabel('position');
 hold on;
 
 subplot(3,2,2);
 plot(t, X2_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,3);
 plot(t, X3_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
+ylabel('phase');
 hold on;
 
 subplot(3,2,4);
 plot(t, X4_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,5);
-plot(t, x);
-title('x vs time');
+plot(t, u1);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
 % ====================================== %
 subplot(3,2,1);
 plot(t, X1o_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
-legend('state 1 of set 1', 'state 1 of set 2')
+ylabel('position');
+legend('K1', 'K2')
 hold on;
 
 subplot(3,2,2);
 plot(t, X2o_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
-legend('state 2 of set 1', 'state 2 of set 2')
+ylabel('velocity');
+legend('K1', 'K2')
 hold on;
 
 subplot(3,2,3);
 plot(t, X3o_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
-legend('state 3 of set 1', 'state 3 of set 2')
+ylabel('phase');
+legend('K1', 'K2')
 hold on;
 
 subplot(3,2,4);
 plot(t, X4o_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
-legend('state 4 of set 1', 'state 4 of set 2')
+ylabel('velocity');
+legend('K1', 'K2')
 hold on;
 
 subplot(3,2,5);
-plot(t, x2);
-title('x vs time');
+plot(t, u2);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
-legend('state 1 of set 1', 'state 2 of set 1', 'state 3 of set 1', 'state 4 of set 1', 'state 1 of set 2', 'state 2 of set 2', 'state 3 set 2', 'state 4 of set 2')
-
+legend('K1', 'K2')
 % ================= 5. Linear Quadratic Optimal Control ======================
 % Goal change q1
 q2 = 5;
@@ -177,6 +185,14 @@ K8 = lqr(A,B,Q5,R3);
 [t,x5]=ode45(@cartPendulum,Tspan,ic,options,parameters,K7,A,B);
 [t,x6]=ode45(@cartPendulum,Tspan,ic,options,parameters,K8,A,B);
 
+u3 = -K3*x1';
+u4 = -K3*x2';
+u5 = -K3*x3';
+u6 = -K3*x4';
+u7 = -K3*x5';
+u8 = -K3*x6';
+
+
 X11_plt = x1(:,1); %x1(t): first column of x
 X12_plt = x1(:,2); %x2(t): third column of x
 X13_plt = x1(:,3); %x1(t): first column of z
@@ -212,250 +228,255 @@ X64_plt = x6(:,4); %x2(t): third column of z
 figure('Name', 'varying q1');
 subplot(3,2,1);
 plot(t, X11_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
+ylabel('position');
 hold on;
 
 subplot(3,2,2);
 plot(t, X12_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,3);
 plot(t, X13_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
+ylabel('phase');
 hold on;
 
 subplot(3,2,4);
 plot(t, X14_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,5);
-plot(t, x1);
-title('x vs time');
+plot(t, u3);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
 subplot(3,2,1);
 plot(t, X21_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
-legend('state 1 of q1 = 0.1', 'state 1 of q1 = 0.005')
+ylabel('position');
+legend('q1 = 0.1', ' q1 = 0.005')
 hold on;
 
 subplot(3,2,2);
 plot(t, X22_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
-legend('state 2 of q1 = 0.1', 'state 2 of q1 = 0.005')
+ylabel('velocity');
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
 
 subplot(3,2,3);
 plot(t, X23_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
-legend('state 3 of q1 = 0.1', 'state 3 of q1 = 0.005')
+ylabel('phase');
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
 
 subplot(3,2,4);
 plot(t, X24_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
-legend('state 4 of q1 = 0.1', 'state 4 of q1 = 0.005')
+ylabel('velocity');
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
 
 subplot(3,2,5);
-plot(t, x2);
-title('x vs time');
+plot(t, u4);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
-hold on;
+ylabel('u');
 
-legend('state 1 of q1 = 0.1', 'state 2 of q1 = 0.1', 'state 3 of q1 = 0.1', 'state 4 of q1 = 0.1', 'state 1 of q1 = 0.005', 'state 2 of q1 = 0.005', 'state 3 of q1 = 0.005', 'state 4 of q1 = 0.005')
+legend('q1 = 0.1', 'q1 = 0.005')
+hold on;
 
 % ==== vary q2 ==== %
 figure('Name', 'varying q2');
 subplot(3,2,1);
 plot(t, X31_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
+ylabel('position');
 hold on;
 
 subplot(3,2,2);
 plot(t, X32_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,3);
 plot(t, X33_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
+ylabel('phase');
 hold on;
 
 subplot(3,2,4);
 plot(t, X34_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,5);
-plot(t, x3);
-title('x vs time');
+plot(t, u5);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
 subplot(3,2,1);
 plot(t, X41_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
-legend('state 1 of q2 = 1', 'state 1 of q2 = 2000')
+ylabel('position');
+legend('q2 = 1', 'q2 = 2000')
 hold on;
 
 subplot(3,2,2);
 plot(t, X42_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
-legend('state 2 of q2 = 1', 'state 2 of q2 = 2000')
+ylabel('velocity');
+legend('q2 = 1', 'q2 = 2000')
 hold on;
 
 subplot(3,2,3);
 plot(t, X43_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
-legend('state 3 of q2 = 1', 'state 3 of q2 = 2000')
+ylabel('phase');
+legend('q2 = 1', 'q2 = 2000')
 hold on;
 
 subplot(3,2,4);
 plot(t, X44_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
-legend('state 4 of q2 = 1', 'state 4 of q2 = 2000')
+ylabel('velocity');
+legend('q2 = 1', 'q2 = 2000')
 hold on;
 
 subplot(3,2,5);
-plot(t, x2);
-title('x vs time');
+plot(t, u6);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
-legend('state 1 of q2 = 1', 'state 2 of q2 = 1', 'state 3 of q2 = 1', 'state 4 of q2 = 1', 'state 1 of q2 = 2000', 'state 2 of q2 = 2000', 'state 3 of q2 = 2000', 'state 4 of q2 = 2000')
+legend('q2 = 1', 'q2 = 2000')
 
 % ==== vary R ==== %
 figure('Name', 'varying R');
 subplot(3,2,1);
 plot(t, X51_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
+ylabel('position');
 hold on;
 
 subplot(3,2,2);
 plot(t, X52_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,3);
 plot(t, X53_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
+ylabel('phase');
 hold on;
 
 subplot(3,2,4);
 plot(t, X54_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
+ylabel('velocity');
 hold on;
 
 subplot(3,2,5);
-plot(t, x5);
-title('x vs time');
+plot(t, u7);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
 subplot(3,2,1);
 plot(t, X61_plt);
-title('x1 vs time');
+title('position vs time');
 xlabel('t');
-ylabel('x1');
-legend('state 1 of R = 0.005', 'state 1 of R = 10')
+ylabel('position');
+legend('R = 0.005', 'R = 10')
 hold on;
 
 subplot(3,2,2);
 plot(t, X62_plt);
-title('x2 vs time');
+title('position velocity vs time');
 xlabel('t');
-ylabel('x2');
-legend('state 2 of R = 0.005', 'state 2 of R = 10')
+ylabel('velocity');
+legend('R = 0.005', 'R = 10')
 hold on;
 
 subplot(3,2,3);
 plot(t, X63_plt);
-title('x3 vs time');
+title('phase vs time');
 xlabel('t');
-ylabel('x3');
-legend('state 3 of R = 0.005', 'state 3 of R = 10')
+ylabel('phase');
+legend('R = 0.005', 'R = 10')
 hold on;
 
 subplot(3,2,4);
 plot(t, X64_plt);
-title('x4 vs time');
+title('phase velocity vs time');
 xlabel('t');
-ylabel('x4');
-legend('state 4 of R = 0.005', 'state 4 of R = 10')
+ylabel('velocity');
+legend('R = 0.005', 'R = 10')
 hold on;
 
 subplot(3,2,5);
-plot(t, x6);
-title('x vs time');
+plot(t, u8);
+title('feedback vs time');
 xlabel('t');
-ylabel('x');
+ylabel('u');
 hold on;
 
-legend('state 1 of R = 0.005', 'state 2 of R = 0.005', 'state 3 of R = 0.005', 'state 4 of R = 0.005', 'state 1 of R = 10', 'state 2 of R = 10', 'state 3 of R = 10', 'state 4 of R = 10')
+legend('R = 0.005', 'R = 10')
 
 % ================= 6. Nonlinear Comparison ======================
-ic = [-1 0 pi/4 0];
+ic = [-1; 0; pi/4; 0];
 syms K x1 x2 x3 x4 t;
-x = [x1 x2 x3 x4];
-
-u = K*x';
+x = [x1; x2; x3; x4];
 
 M = parameters.M; %extract mass
 g = parameters.g; %extract gravitational constant
 l = parameters.l; %extract length of pendulum
 m = parameters.m;
+
 xdot = [x2; ((-m.*l.*sin(x3).*x4.*x4)+(m*g*sin(x3)*cos(x3)+u))./(M+m.*sin(x3).*sin(x3));
         x4; ((-m*l.*sin(x3).*cos(x3).*x4.*x4)+(M+m).*g.*sin(x3)+u.*cos(x3))./(l.*(M+m.*sin(x3).*sin(x3)))];
-    
-Xdot = subs(xdot,{K}, {K7});
+
+usub = -K7*x;
+%u = subs(u,{K},{K7});
+Xdot = subs(xdot,{u}, {usub});
+
 CLS = matlabFunction(Xdot,'Vars',{t,x});
-[t,X]=ode45(CLS,Tspan,ic,options)
+
+[t,X] = ode45(CLS,Tspan,ic,options)
+
+

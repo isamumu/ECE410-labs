@@ -3,7 +3,7 @@
 parameters.M = 1.0731;
 parameters.m = 0.2300;
 parameters.l = 0.3302;
-parameters.g = 0.8;
+parameters.g = 9.8;
 
 % define equilibrium
 xbar = [0 0 0 0]';
@@ -26,8 +26,8 @@ B = subs(B, x, xbar)
 Alinear = subs(A,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 Blinear = subs(B,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 
-%Alinear = subs(Asub, {x1,x2,x3,x4}, {0,0,0,0});
-%Blinear = subs(Bsub, {x1,x2,x3,x4}, {0,0,0,0});
+Alinear = subs(Alinear, {x1,x2,x3,x4}, {0,0,0,0});
+Blinear = subs(Blinear, {x1,x2,x3,x4}, {0,0,0,0});
 
 A = double(Alinear);
 B = double(Blinear);

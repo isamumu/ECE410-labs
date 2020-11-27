@@ -11,24 +11,29 @@ xbar = [0 0 0 0]';
 % define symbolic variables
 syms x1 x2 x3 x4 u M m l g;
 
+% define xdot 
 xdot = [x2; ((-m.*l.*sin(x3).*x4.*x4)+(m*g*sin(x3)*cos(x3)+u))./(M+m.*sin(x3).*sin(x3));
         x4; ((-m*l.*sin(x3).*cos(x3).*x4.*x4)+(M+m).*g.*sin(x3)+u.*cos(x3))./(l.*(M+m.*sin(x3).*sin(x3)))];
 
+% find the jacobians
 x = [x1 x2 x3 x4];
 A = jacobian(xdot,x)
 B = jacobian(xdot,u)
 
 xbar = [0 0 0 0];
 
+% substitute the equilibrium value
 A = subs(A, x, xbar) %should sub in u, but expression goes to 0 already
 B = subs(B, x, xbar)
 
+% substitute the parameter values
 Alinear = subs(A,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 Blinear = subs(B,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 
-%Alinear = subs(Asub, {x1,x2,x3,x4}, {0,0,0,0});
-%Blinear = subs(Bsub, {x1,x2,x3,x4}, {0,0,0,0});
+Alinear = subs(Alinear, {x1,x2,x3,x4}, {0,0,0,0});
+Blinear = subs(Blinear, {x1,x2,x3,x4}, {0,0,0,0});
 
+% convert fractions to double decimals
 A = double(Alinear);
 B = double(Blinear);
 
@@ -528,7 +533,7 @@ plot(t, xlin1);
 title('position vs time');
 xlabel('t');
 ylabel('position');
-legend('q1 = 0.1', ' q1 = 0.005')
+legend('Nonlinear', 'Linear')
 hold on;
 
 subplot(3,2,2);
@@ -536,7 +541,7 @@ plot(t, xlin2);
 title('position velocity vs time');
 xlabel('t');
 ylabel('velocity');
-legend('q1 = 0.1', 'q1 = 0.005')
+legend('Nonlinear', 'Linear')
 hold on;
 
 subplot(3,2,3);
@@ -544,7 +549,7 @@ plot(t, xlin3);
 title('phase vs time');
 xlabel('t');
 ylabel('phase');
-legend('q1 = 0.1', 'q1 = 0.005')
+legend('Nonlinear', 'Linear')
 hold on;
 
 subplot(3,2,4);
@@ -552,44 +557,73 @@ plot(t, xlin4);
 title('phase velocity vs time');
 xlabel('t');
 ylabel('velocity');
-legend('q1 = 0.1', 'q1 = 0.005')
+legend('Nonlinear', 'Linear')
 hold on;
-
-subplot(3,2,5);
-plot(t, u4);
-title('feedback vs time');
-xlabel('t');
-ylabel('u');
-
-legend('q1 = 0.1', 'q1 = 0.005')
-hold on;
-
-
-
 
 %plot diff initial conditions: 
 ic = [-5; 0; pi/4; 0];
-%[t,x_ic2] = ode45(sys,Tspan,ic,options);
+[t,x_ic2] = ode45(non_lin,Tspan,ic,options);
 
-% ic = [-10; 0; pi/4; 0];
-% [t,x_ic3] = ode45(CLS,Tspan,ic,options);
+xc1_plt = x_ic2(:,1); %x1(t): first column of x
+xc2_plt = x_ic2(:,2); %x2(t): third column of x
+xc3_plt = x_ic2(:,3); %x1(t): first column of z
+xc4_plt = x_ic2(:,4); %x2(t): third column of z
 
-%xc1_plt = x_ic2(:,1); %x1(t): first column of x
-%xc2_plt = x_ic2(:,2); %x2(t): third column of x
-%xc3_plt = x_ic2(:,3); %x1(t): first column of z
-%xc4_plt = x_ic2(:,4); %x2(t): third column of z
+ic = [-10; 0; pi/4; 0];
+[t,x_ic3] = ode45(non_lin,Tspan,ic,options);
 
+xy1_plt = x_ic3(:,1); %x1(t): first column of x
+xy2_plt = x_ic3(:,2); %x2(t): third column of x
+xy3_plt = x_ic3(:,3); %x1(t): first column of z
+xy4_plt = x_ic3(:,4); %x2(t): third column of z
 
-% xy1_plt = x_ic3(:,1); %x1(t): first column of x
-% xy2_plt = x_ic3(:,2); %x2(t): third column of x
-% xy3_plt = x_ic3(:,3); %x1(t): first column of z
-% xy4_plt = x_ic3(:,4); %x2(t): third column of z
+figure('Name', 'Non-linear system w. diff IC');
+subplot(3,2,1);
+plot(t, Xnl1_plt);
+hold on; 
+plot(t, xc1_plt); 
+hold on; 
+plot(t, xy1_plt); 
+title('position vs time');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('y=-1', 'y=-5', 'y=-10');
 
-% subplot(3,2,5); 
-% plot(t, xc1_plt, 'red');
-% plot(t, xy1_plt, 'blue'); 
-% title('non-linear system w. diff ic'); 
-% xlabel('t');
-% ylabel('velocity');
-% hold on;
+subplot(3,2,2);
+plot(t, Xnl2_plt);
+hold on; 
+plot(t, xc2_plt); 
+hold on; 
+plot(t, xy2_plt); 
+title('position velocity vs time');
+xlabel('t');
+ylabel('velocity');
+hold on;
+legend('y=-1', 'y=-5', 'y=-10');
+
+subplot(3,2,3);
+plot(t, Xnl3_plt);
+hold on; 
+plot(t, xc3_plt); 
+hold on; 
+plot(t, xy3_plt); 
+title('phase vs time');
+xlabel('t');
+ylabel('phase');
+hold on;
+legend('y=-1', 'y=-5', 'y=-10');
+
+subplot(3,2,4);
+plot(t, Xnl4_plt);
+hold on; 
+plot(t, xc4_plt); 
+hold on; 
+plot(t, xy4_plt); 
+title('phase velocity vs time');
+xlabel('t');
+ylabel('velocity');
+hold on;
+legend('y=-1', 'y=-5', 'y=-10');
+
 

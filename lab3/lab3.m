@@ -3,7 +3,6 @@
 parameters.M = 1.0731;
 parameters.m = 0.2300;
 parameters.l = 0.3302;
-
 parameters.g = 9.81;
 
 % define equilibrium
@@ -12,24 +11,29 @@ xbar = [0 0 0 0]';
 % define symbolic variables
 syms x1 x2 x3 x4 u M m l g;
 
+% define xdot 
 xdot = [x2; ((-m.*l.*sin(x3).*x4.*x4)+(m*g*sin(x3)*cos(x3)+u))./(M+m.*sin(x3).*sin(x3));
         x4; ((-m*l.*sin(x3).*cos(x3).*x4.*x4)+(M+m).*g.*sin(x3)+u.*cos(x3))./(l.*(M+m.*sin(x3).*sin(x3)))];
 
+% find the jacobians
 x = [x1 x2 x3 x4];
 A = jacobian(xdot,x)
 B = jacobian(xdot,u)
 
 xbar = [0 0 0 0];
 
+% substitute the equilibrium value
 A = subs(A, x, xbar) %should sub in u, but expression goes to 0 already
 B = subs(B, x, xbar)
 
+% substitute the parameter values
 Alinear = subs(A,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 Blinear = subs(B,{M,m,l,g}, {parameters.M, parameters.m, parameters.l, parameters.g});
 
 Alinear = subs(Alinear, {x1,x2,x3,x4}, {0,0,0,0});
 Blinear = subs(Blinear, {x1,x2,x3,x4}, {0,0,0,0});
 
+% convert fractions to double decimals
 A = double(Alinear);
 B = double(Blinear);
 
@@ -43,6 +47,8 @@ rankQc = rank(Qc) % notice this equals 4
 % define desired poles
 p = [-1 -2 -3 -4];
 p2 = [-1 -2 -3 -20];
+
+% calculate the gain values
 K1 = place(A,B,p);
 K2 = place(A,B,p2);
 
@@ -59,9 +65,11 @@ Tspan = linspace(0,10,1e3);
 [t,x]=ode45(@cartPendulum,Tspan,ic,options,parameters,K1,A,B);
 [t,x2]=ode45(@cartPendulum,Tspan,ic,options,parameters,K2,A,B);
 
+% calculate the feedback expressions
 u1 = -K1*x';
 u2 = -K2*x2';
 
+% define states to plot
 X1_plt = x(:,1); %x1(t): first column of x
 X2_plt = x(:,2); %x2(t): third column of x
 X3_plt = x(:,3); %x1(t): first column of z
@@ -151,7 +159,8 @@ hold on;
 
 legend('K1', 'K2')
 % ================= 5. Linear Quadratic Optimal Control ======================
-% Goal change q1
+% Goal change q1 
+% define the new parameters
 q2 = 5;
 q21 = 1;
 q22 = 2000;
@@ -163,13 +172,14 @@ R3 = 10;
 q11 = 0.1;
 q12 = 0.005
 
+% define the Q matrices
 Q1 = [q11 0 0 0; 0 0 0 0; 0 0 q2 0; 0 0 0 0]
 Q2 = [q12 0 0 0; 0 0 0 0; 0 0 q2 0; 0 0 0 0]
 Q3 = [q1 0 0 0; 0 0 0 0; 0 0 q21 0; 0 0 0 0]
 Q4 = [q1 0 0 0; 0 0 0 0; 0 0 q22 0; 0 0 0 0]
 Q5 = [q1 0 0 0; 0 0 0 0; 0 0 q2 0; 0 0 0 0]
 
-
+% find the new gain values
 K3 = lqr(A,B,Q1,R1);
 K4 = lqr(A,B,Q2,R1);
 
@@ -179,6 +189,7 @@ K6 = lqr(A,B,Q4,R1);
 K7 = lqr(A,B,Q5,R2);
 K8 = lqr(A,B,Q5,R3);
 
+% continue with integration for each K value
 [t,x1]=ode45(@cartPendulum,Tspan,ic,options,parameters,K3,A,B);
 [t,x2]=ode45(@cartPendulum,Tspan,ic,options,parameters,K4,A,B);
 [t,x3]=ode45(@cartPendulum,Tspan,ic,options,parameters,K5,A,B);
@@ -186,6 +197,7 @@ K8 = lqr(A,B,Q5,R3);
 [t,x5]=ode45(@cartPendulum,Tspan,ic,options,parameters,K7,A,B);
 [t,x6]=ode45(@cartPendulum,Tspan,ic,options,parameters,K8,A,B);
 
+% obtain the new feedback controllers
 u3 = -K3*x1';
 u4 = -K3*x2';
 u5 = -K3*x3';
@@ -193,7 +205,7 @@ u6 = -K3*x4';
 u7 = -K3*x5';
 u8 = -K3*x6';
 
-
+% obtain new states for plotting
 X11_plt = x1(:,1); %x1(t): first column of x
 X12_plt = x1(:,2); %x2(t): third column of x
 X13_plt = x1(:,3); %x1(t): first column of z
@@ -460,7 +472,8 @@ hold on;
 legend('R = 0.005', 'R = 10')
 
 % ================= 6. Nonlinear Comparison ======================
-ic = [-1; 0; pi/4; 0];
+% define the initial conditions
+ic = [-1; 0; pi/4; 0]; 
 syms K x1 x2 x3 x4 t;
 x = [x1; x2; x3; x4];
 
@@ -469,16 +482,22 @@ g = parameters.g; %extract gravitational constant
 l = parameters.l; %extract length of pendulum
 m = parameters.m;
 
+% define the nonlinear system
 xdot = [x2; ((-m.*l.*sin(x3).*x4.*x4)+(m*g*sin(x3)*cos(x3)+u))./(M+m.*sin(x3).*sin(x3));
         x4; ((-m*l.*sin(x3).*cos(x3).*x4.*x4)+(M+m).*g.*sin(x3)+u.*cos(x3))./(l.*(M+m.*sin(x3).*sin(x3)))];
 
+% define the feedback controller with particular gain
 usub = -K7*x;
 
+% substitute the new feedback controller
 Xdot = subs(xdot, u, -K7*x);
+% create function to represent the nonlinear system
 non_lin = matlabFunction(Xdot,'Vars',{t,x});
 
+% integrate over the nonlinear system
 [t,X] = ode45(non_lin,Tspan,ic,options);
 
+% obtain the states for nonlinear system
 Xnl1_plt = X(:,1); %x1(t): first column of x
 Xnl2_plt = X(:,2); %x2(t): third column of x
 Xnl3_plt = X(:,3); %x1(t): first column of z

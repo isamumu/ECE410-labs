@@ -528,7 +528,7 @@ plot(t, xlin1);
 title('position vs time');
 xlabel('t');
 ylabel('position');
-legend('Nonlinear', 'Linear')
+legend('q1 = 0.1', ' q1 = 0.005')
 hold on;
 
 subplot(3,2,2);
@@ -536,7 +536,7 @@ plot(t, xlin2);
 title('position velocity vs time');
 xlabel('t');
 ylabel('velocity');
-legend('Nonlinear', 'Linear')
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
 
 subplot(3,2,3);
@@ -544,7 +544,7 @@ plot(t, xlin3);
 title('phase vs time');
 xlabel('t');
 ylabel('phase');
-legend('Nonlinear', 'Linear')
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
 
 subplot(3,2,4);
@@ -552,73 +552,44 @@ plot(t, xlin4);
 title('phase velocity vs time');
 xlabel('t');
 ylabel('velocity');
-legend('Nonlinear', 'Linear')
+legend('q1 = 0.1', 'q1 = 0.005')
 hold on;
+
+subplot(3,2,5);
+plot(t, u4);
+title('feedback vs time');
+xlabel('t');
+ylabel('u');
+
+legend('q1 = 0.1', 'q1 = 0.005')
+hold on;
+
+
+
 
 %plot diff initial conditions: 
 ic = [-5; 0; pi/4; 0];
-[t,x_ic2] = ode45(non_lin,Tspan,ic,options);
+%[t,x_ic2] = ode45(sys,Tspan,ic,options);
 
-xc1_plt = x_ic2(:,1); %x1(t): first column of x
-xc2_plt = x_ic2(:,2); %x2(t): third column of x
-xc3_plt = x_ic2(:,3); %x1(t): first column of z
-xc4_plt = x_ic2(:,4); %x2(t): third column of z
+% ic = [-10; 0; pi/4; 0];
+% [t,x_ic3] = ode45(CLS,Tspan,ic,options);
 
-ic = [-10; 0; pi/4; 0];
-[t,x_ic3] = ode45(non_lin,Tspan,ic,options);
+%xc1_plt = x_ic2(:,1); %x1(t): first column of x
+%xc2_plt = x_ic2(:,2); %x2(t): third column of x
+%xc3_plt = x_ic2(:,3); %x1(t): first column of z
+%xc4_plt = x_ic2(:,4); %x2(t): third column of z
 
-xy1_plt = x_ic3(:,1); %x1(t): first column of x
-xy2_plt = x_ic3(:,2); %x2(t): third column of x
-xy3_plt = x_ic3(:,3); %x1(t): first column of z
-xy4_plt = x_ic3(:,4); %x2(t): third column of z
 
-figure('Name', 'Non-linear system w. diff IC');
-subplot(3,2,1);
-plot(t, Xnl1_plt);
-hold on; 
-plot(t, xc1_plt); 
-hold on; 
-plot(t, xy1_plt); 
-title('position vs time');
-xlabel('t');
-ylabel('position');
-hold on;
-legend('y=-1', 'y=-5', 'y=-10');
+% xy1_plt = x_ic3(:,1); %x1(t): first column of x
+% xy2_plt = x_ic3(:,2); %x2(t): third column of x
+% xy3_plt = x_ic3(:,3); %x1(t): first column of z
+% xy4_plt = x_ic3(:,4); %x2(t): third column of z
 
-subplot(3,2,2);
-plot(t, Xnl2_plt);
-hold on; 
-plot(t, xc2_plt); 
-hold on; 
-plot(t, xy2_plt); 
-title('position velocity vs time');
-xlabel('t');
-ylabel('velocity');
-hold on;
-legend('y=-1', 'y=-5', 'y=-10');
-
-subplot(3,2,3);
-plot(t, Xnl3_plt);
-hold on; 
-plot(t, xc3_plt); 
-hold on; 
-plot(t, xy3_plt); 
-title('phase vs time');
-xlabel('t');
-ylabel('phase');
-hold on;
-legend('y=-1', 'y=-5', 'y=-10');
-
-subplot(3,2,4);
-plot(t, Xnl4_plt);
-hold on; 
-plot(t, xc4_plt); 
-hold on; 
-plot(t, xy4_plt); 
-title('phase velocity vs time');
-xlabel('t');
-ylabel('velocity');
-hold on;
-legend('y=-1', 'y=-5', 'y=-10');
-
+% subplot(3,2,5); 
+% plot(t, xc1_plt, 'red');
+% plot(t, xy1_plt, 'blue'); 
+% title('non-linear system w. diff ic'); 
+% xlabel('t');
+% ylabel('velocity');
+% hold on;
 

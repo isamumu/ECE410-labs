@@ -67,4 +67,4 @@ K = place(A, B, p)
 % Simulate this system using ic: (−0.5, 0, −π/4, 0) and (0, 0, 0, 0) for x
 % TODO: create a function expressing the dynamics: feedback and estimator
 ic1 = [-0.5, 0, -pi/4, 0];
-ic2 = [0,0,0,0];
+ic2 = [0,0,0,0

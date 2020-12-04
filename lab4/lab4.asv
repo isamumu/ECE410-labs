@@ -56,15 +56,51 @@ obsv(A,C) % observability matrix rank is 4, therefore observable
 % calculate K matrices, followed by L based on the rule that L = K'
 % Remember that Matlab uses the convention that u = −Kx
 K = place(A', C', eval1)
-L1 = K';
+L1 = -K';
 K = place(A', C', eval2)
-L2 = K';
+L2 = -K';
 
 % calculate K for state feedback controller
 p = [-5.1 -5.2 -5.3 -5.4]
-K = place(A, B, p)
+K = -place(A, B, p)
+
 
 % Simulate this system using ic: (−0.5, 0, −π/4, 0) and (0, 0, 0, 0) for x
 % TODO: create a function expressing the dynamics: feedback and estimator
-ic1 = [-0.5, 0, -pi/4, 0];
-ic2 = [0,0,0,0
+x1 = [-0.5;0;-pi/4;0;0;0;0;0];
+
+Tspan = linspace(0,10,1e3);
+options = odeset('RelTol', 1e-7,'AbsTol', 1e-7);
+
+lin = @(t,x) [A*x(1:4) + B*K*x(1:4); (A + L1*C) * x(5:8) + B*K*x(1:4) - L1*C * x(1:4)];
+lin = @(t,x) [A*x(1:4) + B*K*x(1:4); (A + L2*C) * x(5:8) + B*K*x(1:4) - L2*C * x(1:4)];
+%dyn1 = dyn(:,1)
+%dyn2 = dyn(:,2)
+[t,x]=ode45(lin,Tspan,x1, options);
+xdelta = x(:,5:8) - x(:,1:4);
+
+figure('Name', 'decoupled states');
+subplot(2,2,1);
+plot(t, xdelta(:,1));
+hold on; 
+
+subplot(2,2,2);
+plot(t, xdelta(:,2));
+hold on; 
+
+subplot(2,2,3);
+plot(t, xdelta(:,3));
+hold on; 
+
+subplot(2,2,4);
+plot(t, xdelta(:,4));
+hold on; 
+
+title('position vs time');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1');
+
+
+%[t,x2]=ode45(@dynamics,Tspan,ic2,options,K,A,B,C,L2);

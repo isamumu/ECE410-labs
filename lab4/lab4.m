@@ -64,7 +64,7 @@ L2 = -K';
 % calculate K for state feedback controller
 p = [-5.1 -5.2 -5.3 -5.4]
 K = -place(A, B, p)
-L_o = K'
+%L_o = K'
 
 % Simulate this system using ic: (−0.5, 0, −π/4, 0) and (0, 0, 0, 0) for x
 % TODO: create a function expressing the dynamics: feedback and estimator
@@ -223,7 +223,7 @@ x_i = [-0.5;0;-pi/4;0;0;0;0;0];
 xdelta = x(:,5:8) - x(:,1:4);
 xdelta2 = x2(:,5:8) - x2(:,1:4);
 
-figure('Name', 'decoupled nonlinear states');
+figure('Name', 'decoupled error states');
 subplot(2,2,1);
 plot(t, xdelta(:,1));
 hold on; 
@@ -305,16 +305,16 @@ MSE4 = (1/500) * MSE4
 % define the new dynamics of the system
 lin = @(t,x) [A*x(1:4) + B*K*x(5:8); (A + L1*C + B*K) * x(5:8) - L1*C * x(1:4)];
 lin2 = @(t,x) [A*x(1:4) + B*K*x(5:8); (A + L2*C + B*K) * x(5:8) - L2*C * x(1:4)];
-linfeed = @(t,x) [A*x(1:4) + B*K*x(1:4); (A + L_o*C) * x(5:8) + B*K*x(1:4) - L_o*C * x(1:4)];
+linfeed = @(t,x) [A*x(1:4) + B*K*x(1:4)];
 % instantiate the initial conditions
 ic = [-0.5;0;-pi/4;0;0;0;0;0];
 
 % integrate over the dynamics
 [t,x]=ode45(lin,Tspan,ic, options);
 [t,x2]=ode45(lin2,Tspan,ic, options);
-[t,x3]=ode45(linfeed,Tspan,ic, options);
+[t,x3]=ode45(linfeed,Tspan,ic(1:4), options);
 
-figure('Name', 'decoupled nonlinear states');
+figure('Name', 'decoupled linear states');
 subplot(2,2,1);
 plot(t, x(:,1));
 hold on; 
@@ -325,7 +325,7 @@ title('i = 1');
 xlabel('t');
 ylabel('position');
 hold on;
-legend('L1', 'L2');
+legend('L1', 'L2', 'state feedback');
 
 subplot(2,2,2);
 plot(t, x(:,2));
@@ -337,7 +337,7 @@ title('i = 2');
 xlabel('t');
 ylabel('position');
 hold on;
-legend('L1', 'L2');
+legend('L1', 'L2', 'state feedback');
 
 subplot(2,2,3);
 plot(t, x(:,3));
@@ -349,7 +349,7 @@ title('i = 3');
 xlabel('t');
 ylabel('position');
 hold on;
-legend('L1', 'L2');
+legend('L1', 'L2', 'state feedback');
 
 subplot(2,2,4);
 plot(t, x(:,4));
@@ -362,4 +362,127 @@ title('i = 4');
 xlabel('t');
 ylabel('position');
 hold on;
+legend('L1', 'L2', 'state feedback');
+
+% define nonlinear systems
+lin = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(1:4)))./(M+m.*sin(x(3)).*sin(x(3)));
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L1*C) * x(5:8) + B*K*x(1:4) - L1*C*x(1:4)];
+                
+lin2 = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(1:4)))./(M+m.*sin(x(3)).*sin(x(3)));
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L2*C) * x(5:8) + B*K*x(1:4) - L2*C*x(1:4)];
+                
+% integrate over the dynamics
+[t,x]=ode45(lin,Tspan,ic, options);
+[t,x2]=ode45(lin2,Tspan,ic, options);
+[t,x3]=ode45(linfeed,Tspan,ic(1:4), options);
+
+figure('Name', 'decoupled nonlinear states');
+subplot(2,2,1);
+plot(t, x(:,1));
+hold on; 
+plot(t, x2(:,1));
+hold on;
+plot(t, x3(:,1));
+title('i = 1');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2', 'state feedback');
+
+subplot(2,2,2);
+plot(t, x(:,2));
+hold on; 
+plot(t, x2(:,2));
+hold on;
+plot(t, x3(:,2));
+title('i = 2');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2', 'state feedback');
+
+subplot(2,2,3);
+plot(t, x(:,3));
+hold on; 
+plot(t, x2(:,3));
+hold on;
+plot(t, x3(:,3));
+title('i = 3');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2', 'state feedback');
+
+subplot(2,2,4);
+plot(t, x(:,4));
+hold on; 
+plot(t, x2(:,4));
+hold on;
+plot(t, x3(:,4));
+
+title('i = 4');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2', 'state feedback');
+
+% ================= 4.2 Output Feedback Control With Measurement Noise ======================
+
+% define nonlinear systems with noise
+lin = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(1:4)))./(M+m.*sin(x(3)).*sin(x(3)));
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L1*C) * x(5:8) + B*K*x(1:4) - L1*C*x(1:4)-L1*W(t)'];
+                
+lin2 = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(1:4)))./(M+m.*sin(x(3)).*sin(x(3)));
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L2*C) * x(5:8) + B*K*x(1:4) - L2*C*x(1:4)-L2*W(t)'];
+                
+[t,x]=ode45(lin,Tspan,ic, options);
+[t,x2]=ode45(lin2,Tspan,ic, options);
+
+figure('Name', 'decoupled nonlinear states with noise');
+subplot(2,2,1);
+plot(t, x(:,1));
+hold on; 
+plot(t, x2(:,1));
+title('i = 1');
+xlabel('t');
+ylabel('position');
+hold on;
 legend('L1', 'L2');
+
+subplot(2,2,2);
+plot(t, x(:,2));
+hold on; 
+plot(t, x2(:,2));
+hold on;
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2');
+
+subplot(2,2,3);
+plot(t, x(:,3));
+hold on; 
+plot(t, x2(:,3));
+hold on;
+title('i = 3');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2');
+
+subplot(2,2,4);
+plot(t, x(:,4));
+hold on; 
+plot(t, x2(:,4));
+hold on;
+
+title('i = 4');
+xlabel('t');
+ylabel('position');
+hold on;
+legend('L1', 'L2');
+               

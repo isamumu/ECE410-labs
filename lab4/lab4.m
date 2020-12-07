@@ -366,12 +366,12 @@ legend('L1', 'L2', 'state feedback');
 
 % define nonlinear systems
 lin = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(5:8)))./(M+m.*sin(x(3)).*sin(x(3)));
-                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
-                    (A + L1*C) * x(5:8) + B*K*x(1:4) - L1*C*x(1:4)];
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(5:8).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L1*C) * x(5:8) + B*K*x(5:8) - L1*[x(1);x(3)]];
                 
 lin2 = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(5:8)))./(M+m.*sin(x(3)).*sin(x(3)));
-                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
-                    (A + L2*C) * x(5:8) + B*K*x(1:4) - L2*C*x(1:4)];
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(5:8).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L2*C) * x(5:8) + B*K*x(5:8) - L2*[x(1);x(3)]];
                 
 % integrate over the dynamics
 [t,x]=ode45(lin,Tspan,ic, options);
@@ -432,12 +432,12 @@ legend('L1', 'L2', 'state feedback');
 
 % define nonlinear systems with noise
 lin = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(5:8)))./(M+m.*sin(x(3)).*sin(x(3)));
-                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
-                    (A + L1*C) * x(5:8) + B*K*x(1:4) - L1*C*x(1:4)-L1*W(t)'];
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(5:8).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L1*C) * x(5:8) + B*K*x(5:8) - L1*[x(1);x(3)]-L1*W(t)'];
                 
 lin2 = @(t,x) [x(2); ((-m.*l.*sin(x(3)).*x(4).*x(4))+(m*g*sin(x(3))*cos(x(3))+K*x(5:8)))./(M+m.*sin(x(3)).*sin(x(3)));
-                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(1:4).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
-                    (A + L2*C) * x(5:8) + B*K*x(1:4) - L2*C*x(1:4)-L2*W(t)'];
+                x(4); ((-m*l.*sin(x(3)).*cos(x(3)).*x(4).*x(4))+(M+m).*g.*sin(x(3))+K*x(5:8).*cos(x(3)))./(l.*(M+m.*sin(x(3)).*sin(x(3))));
+                    (A + L2*C) * x(5:8) + B*K*x(5:8) - L2*[x(1);x(3)]-L2*W(t)'];
                 
 [t,x]=ode45(lin,Tspan,ic, options);
 [t,x2]=ode45(lin2,Tspan,ic, options);
